@@ -17,9 +17,7 @@ public static class UnmanagedMemory
 	public static IntPtr Alloc(int size)
 	{
 		var ptr = Marshal.AllocHGlobal(size);
-		#if UNITY_EDITOR
-			allocations.Add(ptr);
-		#endif
+		allocations.Add(ptr);
 		return ptr;
 	}
  
