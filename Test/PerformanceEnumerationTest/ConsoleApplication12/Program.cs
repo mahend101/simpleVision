@@ -4,36 +4,55 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
+using System.Linq.Expressions;
+using System.Data;
 
 namespace ConsoleApplication12
 {
+    public static class EnumerableExtensions
+    {
+        public static int IndexOf<T>(this IEnumerable<T> obj, T value)
+        {
+            return obj.IndexOf(value, null);
+        }
+
+        public static int IndexOf<T>(this IEnumerable<T> obj, T value, IEqualityComparer<T> comparer)
+        {
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            var found = obj
+                .Select((a, i) => new { a, i })
+                .FirstOrDefault(x => comparer.Equals(x.a, value));
+            return found == null ? -1 : found.i;
+        }
+    }
+
     class Program
     {
         private static Stopwatch sw;
+
         static void Main(string[] args)
         {
             sw = new Stopwatch();
 
-            string path = @"C:\TEST\Images";
-
-            //string path = @"V:\__Mitarbeiter\Marimuthu\Images";
+            string path = @"G:\Images";
 
             Console.WriteLine($"PATH : {path}");
 
-            int countBMP = getCountForFileType(path, "bmp");
-            int countSVG = getCountForFileType(path, "svg");
+            int countBMP = getCountForFileType(path, "JPG");
+            //int countSVG = getCountForFileType(path, "svg");
 
             Console.Read();
         }
 
         private static int getCountForFileType(string path, string type)
         {
-            bool showTicks = false;
+            bool showTicks = true;
             Console.WriteLine($"===== for type {type} ==== ");
 
             // get files
-            sw.Start();
-            var allFilesWithExtension = System.IO.Directory.EnumerateFiles(path).Where<string>(f => f.EndsWith(type));
+            sw.Restart();
+            var allFilesWithExtension = System.IO.Directory.EnumerateFiles(path).AsParallel().Where<string>(f => f.EndsWith(type));
             sw.Stop();
 
             Console.WriteLine("-- get files ");
@@ -55,6 +74,19 @@ namespace ConsoleApplication12
                 Console.WriteLine($"elapsed time getting count {sw.ElapsedTicks} ticks ");
             }
             Console.WriteLine($"elapsed time getting count {sw.ElapsedMilliseconds} ms \n");
+
+            // get count as parallel
+            sw.Restart();
+            int numberOfFilesParallel = allFilesWithExtension.AsParallel().Count();
+
+            sw.Stop();
+            Console.WriteLine("-- get count as parallel");
+            Console.WriteLine($"number of files: {numberOfFilesParallel}");
+            if (showTicks)
+            {
+                Console.WriteLine($"elapsed time getting count parallel {sw.ElapsedTicks} ticks ");
+            }
+            Console.WriteLine($"elapsed time getting count as parallel {sw.ElapsedMilliseconds} ms \n");
 
             // get array
             sw.Restart();
@@ -82,7 +114,7 @@ namespace ConsoleApplication12
 
             // get element from enumerator 
             sw.Restart();
-            string fileAtenumerator = allFilesWithExtension.ElementAt(numberOfFiles/2);
+            string fileAtenumerator = allFilesWithExtension.ElementAt(numberOfFiles / 2);
             sw.Stop();
             Console.WriteLine($"-- get filename at using enumerator {numberOfFiles / 2}");
             Console.WriteLine($"file at nth place: {fileAtenumerator}");
@@ -105,6 +137,21 @@ namespace ConsoleApplication12
                 Console.WriteLine($"elapsed time getting last {sw.ElapsedTicks} ticks ");
             }
             Console.WriteLine($"elapsed time getting last {sw.ElapsedMilliseconds} ms \n");
+
+            //get indexOf
+            sw.Restart();
+            var indexOfValue = allFilesWithExtension.IndexOf(last);
+
+            sw.Stop();
+
+            Console.WriteLine("-- get indexof ");
+            Console.WriteLine($"\n last: {indexOfValue}");
+            if (showTicks)
+            {
+                Console.WriteLine($"elapsed time getting indexOf {sw.ElapsedTicks} ticks ");
+            }
+            Console.WriteLine($"elapsed time getting indexOf {sw.ElapsedMilliseconds} ms \n");
+
 
             // get first
             sw.Restart();
@@ -138,7 +185,7 @@ namespace ConsoleApplication12
             string currentFilePath = "";
             try
             {
-               //currentFilePath = allFilesWithExtension.Skip(Counter ).First();
+                //currentFilePath = allFilesWithExtension.Skip(Counter ).First();
                 currentFilePath = allFilesWithExtension.ElementAt(Counter);
                 //currentFilePath = array[Counter];
                 CurrentLoadedImage = currentFilePath;
@@ -164,8 +211,5 @@ namespace ConsoleApplication12
 
             return numberOfFiles;
         }
-
-
-
     }
 }
