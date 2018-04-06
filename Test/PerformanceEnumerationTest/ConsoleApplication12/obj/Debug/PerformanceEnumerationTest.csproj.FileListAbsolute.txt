@@ -1,3 +1,0 @@
-C:\Users\Marimuthum\Documents\Visual Studio 2015\Projects\ConsoleApplication12\ConsoleApplication12\bin\Debug\ConsoleApplication12.exe.config
-C:\Users\Marimuthum\Documents\Visual Studio 2015\Projects\ConsoleApplication12\ConsoleApplication12\obj\Debug\ConsoleApplication12.exe
-C:\Users\Marimuthum\Documents\Visual Studio 2015\Projects\ConsoleApplication12\ConsoleApplication12\obj\Debug\ConsoleApplication12.pdb

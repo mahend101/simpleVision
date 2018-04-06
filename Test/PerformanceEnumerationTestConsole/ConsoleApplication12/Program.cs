@@ -35,11 +35,11 @@ namespace ConsoleApplication12
         {
             sw = new Stopwatch();
 
-            string path = @"G:\Images";
+            string path = @"C:\TEST\Images";
 
             Console.WriteLine($"PATH : {path}");
 
-            int countBMP = getCountForFileType(path, "JPG");
+            int countBMP = getCountForFileType(path, "bmp");
             //int countSVG = getCountForFileType(path, "svg");
 
             Console.Read();
@@ -55,7 +55,7 @@ namespace ConsoleApplication12
             var allFilesWithExtension = System.IO.Directory.EnumerateFiles(path).AsParallel().Where<string>(f => f.EndsWith(type));
             sw.Stop();
 
-            Console.WriteLine("-- get files ");
+            //Console.WriteLine("-- get files ");
             if (showTicks)
             {
                 Console.WriteLine($"elapsed time to get enumeration {sw.ElapsedTicks} ticks ");
